@@ -1,59 +1,7 @@
-// Client-side only toast wrapper
-
-let toastInstance = null;
-
-// Initialize toast only on client side
-const initToast = () => {
-  if (typeof window !== 'undefined' && !toastInstance) {
-    try {
-      // Dynamic import only works on client side
-      import('react-hot-toast').then(({ default: toast }) => {
-        toastInstance = toast;
-      }).catch(() => {
-        console.warn('react-hot-toast not available');
-      });
-    } catch (error) {
-      console.warn('Error loading react-hot-toast:', error);
-    }
-  }
-  return toastInstance;
-};
-
-// Safe toast functions
-export const toastSafe = {
-  success: (message) => {
-    const toast = initToast();
-    if (toast) {
-      toast.success(message);
-    } else if (typeof window !== 'undefined') {
-      console.log('✓ Success:', message);
-    }
-  },
-  
-  error: (message) => {
-    const toast = initToast();
-    if (toast) {
-      toast.error(message);
-    } else if (typeof window !== 'undefined') {
-      console.error('✗ Error:', message);
-    }
-  },
-  
-  loading: (message) => {
-    const toast = initToast();
-    if (toast) {
-      toast.loading(message);
-    } else if (typeof window !== 'undefined') {
-      console.log('⏳ Loading:', message);
-    }
-  }
-};
-
-// Simple toast implementation using browser notifications and visual alerts
+// Simple client-side toast implementation.
 const showVisualNotification = (message, type) => {
   if (typeof window === 'undefined') return;
-  
-  // Create notification container
+
   const notification = document.createElement('div');
   notification.style.cssText = `
     position: fixed;
@@ -73,18 +21,16 @@ const showVisualNotification = (message, type) => {
     align-items: flex-start;
     gap: 12px;
   `;
-  
-  // Create message content
+
   const messageContent = document.createElement('div');
   messageContent.style.cssText = `
     flex: 1;
     padding-right: 8px;
   `;
   messageContent.textContent = message;
-  
-  // Create close button
+
   const closeButton = document.createElement('button');
-  closeButton.innerHTML = '×';
+  closeButton.innerHTML = '&times;';
   closeButton.style.cssText = `
     background: none;
     border: none;
@@ -102,17 +48,15 @@ const showVisualNotification = (message, type) => {
     transition: background-color 0.2s ease;
     flex-shrink: 0;
   `;
-  
-  // Add hover effect for close button
+
   closeButton.addEventListener('mouseenter', () => {
     closeButton.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
   });
-  
+
   closeButton.addEventListener('mouseleave', () => {
     closeButton.style.backgroundColor = 'transparent';
   });
-  
-  // Close function
+
   const closeNotification = () => {
     notification.style.transform = 'translateX(100%)';
     setTimeout(() => {
@@ -121,21 +65,17 @@ const showVisualNotification = (message, type) => {
       }
     }, 300);
   };
-  
-  // Add close button click handler
+
   closeButton.addEventListener('click', closeNotification);
-  
-  // Assemble notification
+
   notification.appendChild(messageContent);
   notification.appendChild(closeButton);
   document.body.appendChild(notification);
-  
-  // Animate in
+
   setTimeout(() => {
     notification.style.transform = 'translateX(0)';
   }, 100);
-  
-  // Auto-remove after 4 seconds
+
   setTimeout(() => {
     closeNotification();
   }, 4000);
@@ -143,14 +83,15 @@ const showVisualNotification = (message, type) => {
 
 export const simpleToast = {
   success: (message) => {
-    if (typeof window !== 'undefined') {
-      showVisualNotification(message, 'success');
-    }
+    showVisualNotification(message, 'success');
   },
-  
+
   error: (message) => {
-    if (typeof window !== 'undefined') {
-      showVisualNotification(message, 'error');
-    }
-  }
+    showVisualNotification(message, 'error');
+  },
+};
+
+export const toastSafe = {
+  ...simpleToast,
+  loading: () => {},
 };

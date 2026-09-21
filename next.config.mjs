@@ -67,10 +67,6 @@ const nextConfig = {
     
     // Fix self global for SSR compatibility
     if (isServer) {
-      // Externalize problematic modules
-      config.externals = config.externals || [];
-      config.externals.push('react-hot-toast');
-      
       // Add global polyfill
       config.plugins.push({
         apply: (compiler) => {
