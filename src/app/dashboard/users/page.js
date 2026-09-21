@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2, ShieldOff, UserCheck, UserX } from 'lucide-react';
 import { simpleToast as toast } from '../../../lib/client-toast';
@@ -46,11 +46,7 @@ const UsersDashboard = () => {
     })();
   }, [router]);
 
-  useEffect(() => {
-    if (accessAllowed === true) fetchUsers();
-  }, [accessAllowed]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch('/api/users?admin=true');
       const data = await response.json();
@@ -64,7 +60,11 @@ const UsersDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (accessAllowed === true) fetchUsers();
+  }, [accessAllowed, fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

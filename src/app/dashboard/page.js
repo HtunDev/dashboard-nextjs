@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Eye,
   UserPlus
@@ -9,15 +10,12 @@ import DashboardLayout from '../components/DashboardLayout';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 const DashboardHome = () => {
+  const router = useRouter();
   const [stats, setStats] = useState({
     users: 0
   });
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const usersRes = await fetch('/api/users?admin=true')
         .then(r => r.json())
@@ -30,7 +28,11 @@ const DashboardHome = () => {
     } catch (err) {
       // Keep previous state on error
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const statCards = [
     {
@@ -60,9 +62,7 @@ const DashboardHome = () => {
                 key={stat.name}
                 className="bg-white overflow-hidden shadow rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                 onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    window.location.href = stat.href;
-                  }
+                  router.push(stat.href);
                 }}
               >
                 <div className="p-5">
@@ -94,9 +94,7 @@ const DashboardHome = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <button
                 onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    window.location.href = '/dashboard/users';
-                  }
+                  router.push('/dashboard/users');
                 }}
                 className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow text-left"
               >

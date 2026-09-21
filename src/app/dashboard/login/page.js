@@ -129,13 +129,12 @@ const LoginForm = () => {
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryErrorMessage = getErrorMessageFromQuery(searchParams.get('error'));
+  const displayedError = inlineError || queryErrorMessage;
 
   useEffect(() => {
-    const error = searchParams.get('error');
-    const message = getErrorMessageFromQuery(error);
-    if (message) {
-      setInlineError(message);
-      toast.error(message);
+    if (queryErrorMessage) {
+      toast.error(queryErrorMessage);
     }
 
     const stepParam = searchParams.get('step');
@@ -152,7 +151,7 @@ const LoginForm = () => {
     } catch {
       sessionStorage.removeItem('pending_2fa_login');
     }
-  }, [searchParams]);
+  }, [queryErrorMessage, searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -241,7 +240,7 @@ const LoginForm = () => {
         {is2FAStep ? (
           <TwoFactorStep
             step={step}
-            inlineError={inlineError}
+            inlineError={displayedError}
             qrCodeDataUrl={qrCodeDataUrl}
             twoFactorCode={twoFactorCode}
             loading={loading}
@@ -251,7 +250,7 @@ const LoginForm = () => {
           />
         ) : (
           <CredentialsStep
-            inlineError={inlineError}
+            inlineError={displayedError}
             loading={loading}
             formData={formData}
             setFormData={setFormData}
