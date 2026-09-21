@@ -1,0 +1,36 @@
+{
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:migrate": "node src/lib/migrate.js",
+    "db:setup": "npm run db:migrate",
+    "db:seed": "node -e \"import('./src/lib/seed.js').then(async m => { const ok = await m.seedDatabase({ closePool: true }); process.exit(ok ? 0 : 1); })\""
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.400.0",
+    "mysql2": "^3.6.5",
+    "next": "15.5.3",
+    "otplib": "^12.0.1",
+    "prop-types": "^15.8.1",
+    "qrcode": "^1.5.3",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.1.14",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.3",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^4.1.14"
+  }
+}
